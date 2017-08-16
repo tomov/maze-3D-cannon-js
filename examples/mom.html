@@ -274,14 +274,17 @@
                 window.addEventListener( 'resize', onWindowResize, false );
 
                 // Add boxes
-                var halfExtents = new CANNON.Vec3(1,1,1);
+                var halfExtents = new CANNON.Vec3(1,0.5,1);
                 var boxShape = new CANNON.Box(halfExtents);
                 var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
-                for(var i=0; i<7; i++){
+                for(var i=0; i<1; i++){
                     var x = (Math.random()-0.5)*20;
                     var y = 1 + (Math.random()-0.5)*1;
                     var z = (Math.random()-0.5)*20;
-                    var boxBody = new CANNON.Body({ mass: 5 });
+                    x = 0;
+                    y = 0.5;
+                    z = -10;
+                    var boxBody = new CANNON.Body({ mass: 1000 });
                     boxBody.addShape(boxShape);
                     var boxMesh = new THREE.Mesh( boxGeometry, material );
                     world.addBody(boxBody);
@@ -296,6 +299,7 @@
 
 
                 // Add linked boxes
+                /*
                 var size = 0.5;
                 var he = new CANNON.Vec3(size,size,size*0.1);
                 var boxShape = new CANNON.Box(he);
@@ -328,6 +332,7 @@
                     }
                     last = boxbody;
                 }
+                */
             }
 
             function onWindowResize() {
