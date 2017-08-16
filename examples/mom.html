@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>cannon.js + three.js physics shooter</title>
+        <title>Maze task POC</title>
         <style>
             html, body {
                 width: 100%;
@@ -73,6 +73,44 @@
         </div>
 
         <script>
+
+            var map = [
+                '##########',
+                '#...#....#',
+                '#........#',
+                '#..X.....#',
+                '#........#',
+                '#........#',
+                '##########'
+            ];
+
+            function parseLevel(map) {
+                var level = {
+                    boxes:[],
+                    agent:{x:0, y:5, z:0}
+                };
+
+                var scale = 2;
+                var ground = 0.5;
+                for (var i = 0; i < map.length; i++) {
+                    for (var j = 0; j < map.length; j++) {
+                        var pos = {x: (i * scale), y: ground, z: (j * scale)};
+                        switch (map[i][j]) {
+                            case '#':
+                                level.boxes.push(pos);
+                            case 'X':
+                                level.agent = pos;
+                                level.agent.y = 5;
+                                level.agent.x = level.agent.x;
+                                level.agent.z = level.agent.z - 4;
+                        }
+                    }
+                }
+
+                return level;
+            }
+
+            var level = parseLevel(map);
 
             var sphereShape, sphereBody, world, physicsMaterial, walls=[], balls=[], ballMeshes=[], boxes=[], boxMeshes=[];
 
@@ -170,6 +208,7 @@
             animate();
 
             function initCannon(){
+
                 // Setup our world
                 world = new CANNON.World();
                 world.quatNormalizeSkip = 0;
@@ -206,7 +245,9 @@
                 sphereShape = new CANNON.Sphere(radius);
                 sphereBody = new CANNON.Body({ mass: mass });
                 sphereBody.addShape(sphereShape);
-                sphereBody.position.set(0,5,0);
+                sphereBody.position.set(6,10,0);
+                console.log(level.agent);
+                //sphereBody.position.set(level.agent.x, level.agent.y, level.agent.z);
                 sphereBody.linearDamping = 0.9;
                 world.addBody(sphereBody);
 
@@ -248,8 +289,7 @@
                 scene.add( light );
 
 
-
-                controls = new PointerLockControls( camera , sphereBody );
+                controls = new PointerLockControls( camera , sphereBody, level.agent );
                 scene.add( controls.getObject() );
 
                 // floor
@@ -277,13 +317,22 @@
                 var halfExtents = new CANNON.Vec3(1,0.5,1);
                 var boxShape = new CANNON.Box(halfExtents);
                 var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
-                for(var i=0; i<1; i++){
-                    var x = (Math.random()-0.5)*20;
-                    var y = 1 + (Math.random()-0.5)*1;
-                    var z = (Math.random()-0.5)*20;
-                    x = 0;
-                    y = 0.5;
-                    z = -10;
+
+                for(var i=0; i<level.boxes.length; i++){
+                    //var x = (Math.random()-0.5)*20;
+                    //var y = 1 + (Math.random()-0.5)*1;
+                    //var z = (Math.random()-0.5)*20;
+                    x = level.boxes[i].x;
+                    y = level.boxes[i].y;
+                    z = level.boxes[i].z;
+
+                    console.log(i);
+                    console.log(level.boxes[i]);
+                    var halfExtents = new CANNON.Vec3(0.9,0.5 + i * 0.1,0.9);
+                    var boxShape = new CANNON.Box(halfExtents);
+                    var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+
+
                     var boxBody = new CANNON.Body({ mass: 1000 });
                     boxBody.addShape(boxShape);
                     var boxMesh = new THREE.Mesh( boxGeometry, material );
