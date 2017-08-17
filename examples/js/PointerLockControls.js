@@ -6,6 +6,7 @@
 
     var eyeYPos = 2; // eyes are 2 meters above the ground
     var velocityFactor = 0.2;
+    var angularVelocityFactor = 0.02;
     var jumpVelocity = 10;
     var scope = this;
 
@@ -22,6 +23,8 @@
     var moveBackward = false;
     var moveLeft = false;
     var moveRight = false;
+    var turnLeft = false;
+    var turnRight = false;
 
     var canJump = false;
 
@@ -70,7 +73,9 @@
 
             case 37: // left
             case 65: // a
-                moveLeft = true; break;
+                //moveLeft = true;
+                turnLeft = true;
+                break;
 
             case 40: // down
             case 83: // s
@@ -79,7 +84,8 @@
 
             case 39: // right
             case 68: // d
-                moveRight = true;
+                //moveRight = true;
+                turnRight = true;
                 break;
 
             case 32: // space
@@ -103,7 +109,8 @@
 
             case 37: // left
             case 65: // a
-                moveLeft = false;
+                //moveLeft = false;
+                turnLeft = false;
                 break;
 
             case 40: // down
@@ -113,7 +120,8 @@
 
             case 39: // right
             case 68: // d
-                moveRight = false;
+                //moveRight = false;
+                turnRight = false;
                 break;
 
         }
@@ -158,6 +166,13 @@
         }
         if ( moveRight ){
             inputVelocity.x = velocityFactor * delta;
+        }
+
+        if (turnLeft) {
+            yawObject.rotation.y += angularVelocityFactor * delta;
+        }
+        if (turnRight) {
+            yawObject.rotation.y -= angularVelocityFactor * delta;
         }
 
         // Convert velocity to world coordinates
