@@ -298,7 +298,8 @@
                                     height: scale * 0.01,
                                     depth: scale * 0.5,
                                     color: 0x00ff00,
-                                    mass: 1000});
+                                    mass: 1000,
+                                    type: 'terminal'});
                                 break;
                             case 'X':
                                 level.agent = {
@@ -481,7 +482,7 @@
                 scene.add( ambient );
 
                 light = new THREE.SpotLight( 0xffffff );
-                light.position.set( 10, 30, 20 );
+                light.position.set( 10, 40, 20 );
                 light.target.position.set( 0, 0, 0 );
                 if(true){
                     light.castShadow = true;
@@ -568,8 +569,8 @@
                     boxMeshes.push(boxMesh);
 
                     if (box.type == 'door') {
-                        console.log(last);
-                        console.log(boxBody);
+                        //console.log(last);
+                        //console.log(boxBody);
                         var lastBox = level.boxes[i - 1];
                         // TODO FIXME HACK this is one big hack for the demo
                         var c1 = new CANNON.PointToPointConstraint(boxBody,
@@ -684,6 +685,9 @@
                 if(controls.enabled){
                     world.step(dt);
 
+                    //console.log(controls.getObject().position);
+                    var pos = controls.getObject().position;
+
                     // Update ball positions
                     for(var i=0; i<balls.length; i++){
                         ballMeshes[i].position.copy(balls[i].position);
@@ -694,6 +698,24 @@
                     for(var i=0; i<boxes.length; i++){
                         boxMeshes[i].position.copy(boxes[i].position);
                         boxMeshes[i].quaternion.copy(boxes[i].quaternion);
+
+                        var box = level.boxes[i];
+                        if (level.boxes[i].type == 'terminal') {
+                            //console.log(pos);
+                            if (pos.x >= boxes[i].position.x - box.width * 0.5 && pos.x <= boxes[i].position.x + box.width * 0.5
+                                && pos.z >= boxes[i].position.z - box.depth * 0.5 && pos.z <= boxes[i].position.z + box.depth * 0.5) {
+
+                                controls.enabled = false;
+
+                                blocker.style.display = '-webkit-box';
+                                blocker.style.display = '-moz-box';
+                                blocker.style.display = 'box';
+
+                                instructions.innerHTML = '<span style="font-size:40px">YOU WON!</span>';
+                                instructions.style.display = '';
+                                
+                            }
+                        }
                     }
                 }
 
