@@ -93,18 +93,22 @@
                 var scale = 2;
                 var ground = 0.5;
                 for (var i = 0; i < map.length; i++) {
-                    for (var j = 0; j < map.length; j++) {
-                        var pos = {x: (i * scale), y: ground, z: (j * scale)};
+                    for (var j = 0; j < map[i].length; j++) {
                         switch (map[i][j]) {
                             case '#':
-                                level.boxes.push(pos);
+                                level.boxes.push({x: (i * scale), y: ground, z: (j * scale)});
+                                break;
                             case 'X':
-                                level.agent = pos;
-                                level.agent.y = 5;
-                                level.agent.x = level.agent.x;
-                                level.agent.z = level.agent.z - 4;
+                                level.agent = {x: (i * scale), y: ground, z: (j * scale)};
+                                break;
                         }
                     }
+                }
+
+                console.log(level);
+                for (var i = 0; i < level.boxes.length; i++) {
+                    level.boxes[i].x -= level.agent.x;
+                    level.boxes[i].z -= level.agent.z;
                 }
 
                 return level;
@@ -245,8 +249,8 @@
                 sphereShape = new CANNON.Sphere(radius);
                 sphereBody = new CANNON.Body({ mass: mass });
                 sphereBody.addShape(sphereShape);
-                sphereBody.position.set(6,10,0);
-                console.log(level.agent);
+                sphereBody.position.set(0,5,0);
+                //console.log(level.agent);
                 //sphereBody.position.set(level.agent.x, level.agent.y, level.agent.z);
                 sphereBody.linearDamping = 0.9;
                 world.addBody(sphereBody);
@@ -289,7 +293,7 @@
                 scene.add( light );
 
 
-                controls = new PointerLockControls( camera , sphereBody, level.agent );
+                controls = new PointerLockControls( camera , sphereBody );
                 scene.add( controls.getObject() );
 
                 // floor
@@ -328,7 +332,7 @@
 
                     console.log(i);
                     console.log(level.boxes[i]);
-                    var halfExtents = new CANNON.Vec3(0.9,0.5 + i * 0.1,0.9);
+                    var halfExtents = new CANNON.Vec3(0.9,0.5,0.9);
                     var boxShape = new CANNON.Box(halfExtents);
                     var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
 
